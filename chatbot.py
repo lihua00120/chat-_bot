@@ -119,7 +119,7 @@ recipe = pd.read_csv("recipe.csv")
 recipe.head()
 
 import pandas as pd
-df_tomorrow = pd.read_csv('veg_pred.csv')
+df_tomorrow = pd.read_csv('veg-price-analysis/veg_pred.csv')
 df_tomorrow = df_tomorrow[df_tomorrow["產品名稱"] != "其他"]
 df_tomorrow
 
@@ -127,7 +127,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 # 讀取 CSV
-df_price = pd.read_csv("/veg_prices_history.csv")
+df_price = pd.read_csv("veg-price-analysis/veg_prices_history.csv")
 df_price['交易日期'] = pd.to_datetime(df_price['交易日期']).dt.date
 
 # 篩選最近一個月
