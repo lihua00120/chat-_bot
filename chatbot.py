@@ -127,7 +127,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 # 讀取 CSV
-df_price = pd.read_csv("veg_prices_history.csv")
+df_price = pd.read_csv("/veg_prices_history.csv")
 df_price['交易日期'] = pd.to_datetime(df_price['交易日期']).dt.date
 
 # 篩選最近一個月
