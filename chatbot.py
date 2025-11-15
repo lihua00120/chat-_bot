@@ -43,8 +43,8 @@ avg_price_dict = df_recent.groupby('產品名稱')['加權平均價(元/公斤)'
 # ============================
 app = Flask(__name__)
 
-LINE_CHANNEL_ACCESS_TOKEN = os.getenv(""jhqh1eqTNFzl6uM30HXt14IrYgRX+wZ6bxT5Uf/snr/dWl8KkQ2jmPvzdFlFcrVVUcbsVnbzAK9IdbbfeQkJcEHXbH6mDh3pZLDHaWimIAbgjVKyqzFRYH+FpjdsuYsj/FNwpBdOCn55wkrwP9ajTwdB04t89/1O/w1cDnyilFU="")
-LINE_CHANNEL_SECRET = os.getenv(""70a36a332d4d50977982441825bbabc6"")
+LINE_CHANNEL_ACCESS_TOKEN = os.getenv("jhqh1eqTNFzl6uM30HXt14IrYgRX+wZ6bxT5Uf/snr/dWl8KkQ2jmPvzdFlFcrVVUcbsVnbzAK9IdbbfeQkJcEHXbH6mDh3pZLDHaWimIAbgjVKyqzFRYH+FpjdsuYsj/FNwpBdOCn55wkrwP9ajTwdB04t89/1O/w1cDnyilFU=")
+LINE_CHANNEL_SECRET = os.getenv("70a36a332d4d50977982441825bbabc6")
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
