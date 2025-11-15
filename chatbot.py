@@ -13,7 +13,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 # ============================
 # 事前載入資料
 # ============================
-git clone https://github.com/lihua00120/veg-price-analysis.git
+os.system("git clone https://github.com/lihua00120/veg-price-analysis.git")
 # Tomorrow prediction
 df_tomorrow = pd.read_csv("veg-price-analysis/veg_pred.csv")
 df_tomorrow = df_tomorrow[df_tomorrow["產品名稱"] != "其他"]
