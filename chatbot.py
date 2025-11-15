@@ -17,7 +17,7 @@ URL_TOMORROW = "https://raw.githubusercontent.com/lihua00120/veg-price-analysis/
 URL_PRICE = "https://raw.githubusercontent.com/lihua00120/veg-price-analysis/main/veg_prices_history.csv"
 
 # Tomorrow prediction
-df_tomorrow = pd.read_csv(URL_TOMORROW ,encoding='utf-8', sep=',', header=None)
+df_tomorrow = pd.read_csv(URL_TOMORROW ,encoding='utf-8', sep=',')
 df_tomorrow = df_tomorrow[df_tomorrow["產品名稱"] != "其他"]
 tomorrow_price = dict(zip(df_tomorrow['產品名稱'], df_tomorrow['預測明日菜價(元/公斤)']))
 
@@ -25,7 +25,7 @@ tomorrow_price = dict(zip(df_tomorrow['產品名稱'], df_tomorrow['預測明日
 df_recipe = pd.read_csv("recipe.csv")
 
 # 過去 30 天資料
-df_price = pd.read_csv(URL_PRICE ,encoding='utf-8', sep=',', header=None)
+df_price = pd.read_csv(URL_PRICE ,encoding='utf-8', sep=',')
 df_price['交易日期'] = pd.to_datetime(df_price['交易日期']).dt.date
 
 today = datetime.today().date()
