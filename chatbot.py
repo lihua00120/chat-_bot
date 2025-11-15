@@ -13,9 +13,8 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 # ============================
 # 事前載入資料
 # ============================
-os.system("git clone https://github.com/lihua00120/veg-price-analysis.git")
 # Tomorrow prediction
-df_tomorrow = pd.read_csv("veg-price-analysis/veg_pred.csv")
+df_tomorrow = pd.read_csv("https://github.com/lihua00120/veg-price-analysis/blob/main/veg_pred.csv")
 df_tomorrow = df_tomorrow[df_tomorrow["產品名稱"] != "其他"]
 tomorrow_price = dict(zip(df_tomorrow['產品名稱'], df_tomorrow['預測明日菜價(元/公斤)']))
 
@@ -23,7 +22,7 @@ tomorrow_price = dict(zip(df_tomorrow['產品名稱'], df_tomorrow['預測明日
 df_recipe = pd.read_csv("recipe.csv")
 
 # 過去 30 天資料
-df_price = pd.read_csv("veg-price-analysis/veg_prices_history.csv")
+df_price = pd.read_csv("https://github.com/lihua00120/veg-price-analysis/blob/main/veg_prices_history.csv")
 df_price['交易日期'] = pd.to_datetime(df_price['交易日期']).dt.date
 
 today = datetime.today().date()
