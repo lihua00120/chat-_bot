@@ -87,14 +87,12 @@ def handle_user_message(user_input):
         under_avg = [d for d in diffs if d[3] > 0]
         # 跌幅從大到小排序
         if len(under_avg) >= 5:
-            selected = sorted(under_avg, key=lambda x: x[3], reverse=True)[:5]
-            return selected
+            return sorted(under_avg, key=lambda x: x[3], reverse=True)[:5]
 
-        selected = sorted(diffs, key=lambda x: abs(x[3]))[:5]
-        return selected  # 回傳完整資料（包含跌幅）
+        return sorted(diffs, key=lambda x: abs(x[3]))[:5]
         
     if user_input == "明日菜價":
-
+        
         selected = get_top5_cheapest()
 
         if not selected:
@@ -106,25 +104,14 @@ def handle_user_message(user_input):
             result += f"{veg_display} → {price:.2f} 元/公斤（比月均低 {diff:.1f}）\n"
 
         return result
-        # # 選前五名
-        # if len(under_avg) >= 5:
-        #     selected = sorted(under_avg, key=lambda x: x[1] - x[2], reverse=True)[:5]
-        # else:
-        #     selected = sorted(diffs, key=lambda x: abs(x[1] - x[2]))[:5]
 
-        # result = " 前五名便宜蔬菜及明日預測價格：\n"
-        # for veg, avg, price in selected:
-        #     result += f"{veg} → {price:.2f} 元/公斤（每月平均 {avg:.1f}）\n"
-
-        # # 回傳同時保存，用於下一步的「建議食譜」
-        # return result
 
     elif user_input == "建議食譜":
         result = " 依據便宜蔬菜推薦食譜：\n"
-         selected = get_top5_cheapest()
+        selected = get_top5_cheapest()
         # 從便宜菜中挑前幾名
 
-        for veg, _ in cheap_veggies:
+        for veg, avg, pred, diff in selected:
             veg_display = name_map.get(veg, veg)
             veg_search = name_map.get(veg, veg)
             recipes = df_recipe[
