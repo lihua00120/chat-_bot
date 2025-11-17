@@ -38,6 +38,23 @@ df_recent['產品名稱'] = df_recent['產品名稱'].str.strip().str.split().st
 # 計算平均價格
 avg_price_dict = df_recent.groupby('產品名稱')['加權平均價(元/公斤)'].mean().to_dict()
 
+#================
+#換名字
+name_map = {
+    "青花苔": "花椰菜",
+    "青江白菜": "小白菜",
+    "隼人瓜": "佛手瓜",
+    "薯蕷": "山藥",
+    "蕹菜": "空心菜",
+    "萊豆": "蠶豆",
+    "花椰菜": "白花椰",
+    "胡瓜": "小黃瓜",
+    "甘藷": "地瓜",
+    "甘藍": "高麗菜",
+    "球莖甘藍": "高麗菜",
+    "敏豆": "四季豆",
+    "扁蒲": "蒲瓜"
+}
 
 
 # ============================
@@ -89,14 +106,15 @@ def handle_user_message(user_input):
         )[:5]  # avg 低的前五名
 
         for veg, _ in cheap_veggies:
+            veg_display = name_map.get(veg, veg)
             recipes = df_recipe[
                 df_recipe["主要食材"].str.contains(veg, na=False)
             ]
 
             if recipes.empty:
-                result += f"❌ {veg} 找不到食譜\n"
+                result += f"❌ {veg_display} 找不到食譜\n"
             else:
-                result += f"\n🟦 {veg} 可料理：\n"
+                result += f"\n🟦 {veg_display} 可料理：\n"
                 for _, row in recipes.iterrows():
                     result += f"- {row['菜名']}（主食材：{row['主要食材']}）\n"
 
