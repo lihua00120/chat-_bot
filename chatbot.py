@@ -92,7 +92,7 @@ def handle_user_message(user_input):
 
         result = " 前五名便宜蔬菜及明日預測價格：\n"
         for veg, avg, price in selected:
-            result += f"{veg} → {price:.2f} 元/公斤（平均 {avg:.1f}）\n"
+            result += f"{veg} → {price:.2f} 元/公斤（每月平均 {avg:.1f}）\n"
 
         # 回傳同時保存，用於下一步的「建議食譜」
         return result
