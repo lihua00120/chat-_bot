@@ -75,40 +75,60 @@ handler = WebhookHandler(LINE_CHANNEL_SECRET)
 def handle_user_message(user_input):
     user_input = user_input.strip()
 
-    if user_input == "明日菜價":
+    # 共用：取得跌價蔬菜前五名
+    def get_top5_cheapest():
         diffs = []
         for veg, avg in avg_price_dict.items():
             if veg in tomorrow_price:
-                diffs.append((veg, avg, tomorrow_price[veg]))
+                pred = tomorrow_price[veg]
+                diff = avg - pred  # 正值 = 比平均便宜
+                diffs.append((veg, avg, pred, diff))  # (菜名, 月均, 預測, 差值)
 
-        # 低於平均的蔬菜
-        under_avg = [x for x in diffs if x[2] < x[1]]
-
-        # 選前五名
+        under_avg = [d for d in diffs if d[3] > 0]
+        # 跌幅從大到小排序
         if len(under_avg) >= 5:
-            selected = sorted(under_avg, key=lambda x: x[1] - x[2], reverse=True)[:5]
-        else:
-            selected = sorted(diffs, key=lambda x: abs(x[1] - x[2]))[:5]
+            selected = sorted(under_avg, key=lambda x: x[3], reverse=True)[:5]
+            return selected
+
+        selected = sorted(diffs, key=lambda x: abs(x[3]))[:5]
+        return selected  # 回傳完整資料（包含跌幅）
+        
+    if user_input == "明日菜價":
+
+        selected = get_top5_cheapest()
+
+        if not selected:
+            return "⚠️ 明日沒有任何蔬菜低於月平均價！"
 
         result = " 前五名便宜蔬菜及明日預測價格：\n"
-        for veg, avg, price in selected:
-            result += f"{veg} → {price:.2f} 元/公斤（每月平均 {avg:.1f}）\n"
+        for veg, avg, price, diff in selected:
+            veg_display = name_map.get(veg, veg)
+            result += f"{veg_display} → {price:.2f} 元/公斤（比月均低 {diff:.1f}）\n"
 
-        # 回傳同時保存，用於下一步的「建議食譜」
         return result
+        # # 選前五名
+        # if len(under_avg) >= 5:
+        #     selected = sorted(under_avg, key=lambda x: x[1] - x[2], reverse=True)[:5]
+        # else:
+        #     selected = sorted(diffs, key=lambda x: abs(x[1] - x[2]))[:5]
+
+        # result = " 前五名便宜蔬菜及明日預測價格：\n"
+        # for veg, avg, price in selected:
+        #     result += f"{veg} → {price:.2f} 元/公斤（每月平均 {avg:.1f}）\n"
+
+        # # 回傳同時保存，用於下一步的「建議食譜」
+        # return result
 
     elif user_input == "建議食譜":
         result = " 依據便宜蔬菜推薦食譜：\n"
-
+         selected = get_top5_cheapest()
         # 從便宜菜中挑前幾名
-        cheap_veggies = sorted(
-            avg_price_dict.items(), key=lambda x: x[1]
-        )[:5]  # avg 低的前五名
 
         for veg, _ in cheap_veggies:
             veg_display = name_map.get(veg, veg)
+            veg_search = name_map.get(veg, veg)
             recipes = df_recipe[
-                df_recipe["主要食材"].str.contains(veg, na=False)
+                df_recipe["主要食材"].str.contains(veg_search, na=False)
             ]
 
             if recipes.empty:
