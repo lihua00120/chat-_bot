@@ -90,6 +90,39 @@ def handle_user_message(user_input):
             return sorted(under_avg, key=lambda x: x[3], reverse=True)[:5]
 
         return sorted(diffs, key=lambda x: abs(x[3]))[:5]
+
+    def find_recipes(vegs):
+        columns = []
+        for veg in vegs:
+            veg_display = name_map.get(veg, veg)
+            veg_search = name_map.get(veg, veg)
+            recipes = df_recipe[
+                df_recipe["主要食材"].str.contains(veg_search, na=False)|
+                df_recipe["輔助食材"].str.contains(veg_search, na=False)
+            ]
+            if recipes.empty:
+                columns.append(
+                    CarouselColumn(
+                        title=f"{veg_display} 找不到食譜",
+                        text="暫無建議菜單"
+                    )
+                )
+            else:
+                for _, row in recipes.iterrows():
+                    column_text = (
+                        f"主食材：{row['主要食材']}\n"
+                        f"輔助食材：{row['輔助食材']}\n"
+                        f"熱量：{row['熱量 kcal']} kcal\n"
+                        f"蛋白質：{row['蛋白質 g']} g\n"
+                        f"碳水：{row['碳水 g']} g"
+                    )
+                    columns.append(
+                        CarouselColumn(
+                            title=row['菜名'],
+                            text=column_text[:120]  # LINE CarouselColumn text 最多 120 字元
+                        )
+                    )
+        return columns
         
     if user_input == "明日菜價":
         
@@ -108,47 +141,23 @@ def handle_user_message(user_input):
 
     elif user_input == "建議食譜":
         selected = get_top5_cheapest()
-        columns = []
-        # 從便宜菜中挑前幾名
-
-        for veg, avg, pred, diff in selected:
-            veg_display = name_map.get(veg, veg)
-            veg_search = name_map.get(veg, veg)
-            recipes = df_recipe[
-                df_recipe["主要食材"].str.contains(veg_search, na=False)
-            ]
-
-            if recipes.empty:
-                columns.append(
-                    CarouselColumn(
-                        title=f"{veg_display} 找不到食譜",
-                        text="暫無建議菜單"
-                    )
-            )
-            else:
-                for _, row in recipes.iterrows():
-                    column_text = (
-                        f"主食材：{row['主要食材']}\n"
-                        f"輔助食材：{row['輔助食材']}\n"
-                        f"熱量：{row['熱量 kcal']} kcal\n "
-                        f"蛋白質：{row['蛋白質 g']} g\n "
-                        f"碳水：{row['碳水 g']} g"
-                )
-
-                    columns.append(
-                        CarouselColumn(
-                            title=row['菜名'],
-                            text=column_text[:120]  # LINE CarouselColumn text 最多 120 字元
-                        )
-                )
-         return TemplateSendMessage(
-                alt_text="建議食譜",
-                template=CarouselTemplate(columns=columns)
+        vegs = [veg for veg, avg, pred, diff in selected]
+        columns = find_recipes(vegs)
+        return TemplateSendMessage(
+            alt_text="建議食譜",
+            template=CarouselTemplate(columns=columns)
         )
 
-
     else:
-        return "請輸入以下指令：\n1️⃣ 明日菜價\n2️⃣ 建議食譜"
+        # 可以支援多個菜名，用逗號或空格分隔
+        vegs = [v.strip() for v in user_input.split(" 、")]
+        columns = find_recipes(vegs)
+        if not columns:
+            return f"❌ 找不到包含 {user_input} 的食譜"
+        return TemplateSendMessage(
+            alt_text=f"{user_input} 食譜",
+            template=CarouselTemplate(columns=columns)
+        )
 
 
 
