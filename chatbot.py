@@ -107,7 +107,6 @@ def handle_user_message(user_input):
 
 
     elif user_input == "建議食譜":
-        result = " 依據便宜蔬菜推薦食譜：\n"
         selected = get_top5_cheapest()
         columns = []
         # 從便宜菜中挑前幾名
@@ -127,16 +126,26 @@ def handle_user_message(user_input):
                     )
             )
             else:
-                
-                result += f"\n🟦 {veg_display} 可料理：\n"
                 for _, row in recipes.iterrows():
-                    result += (
-                        f"- {row['菜名']}（主食材：{row['主要食材']}）\n"
-                        f"  熱量：{row['熱量 kcal']} kcal | "
-                        f"蛋白質：{row['蛋白質 g']} g | "
-                        f"碳水：{row['碳水 g']} g\n"
-                    )
-        return result
+                    column_text = (
+                        f"主食材：{row['主要食材']}\n"
+                        f"輔助食材：{row['輔助食材']}\n"
+                        f"熱量：{row['熱量 kcal']} kcal\n "
+                        f"蛋白質：{row['蛋白質 g']} g\n "
+                        f"碳水：{row['碳水 g']} g"
+                )
+
+                    columns.append(
+                        CarouselColumn(
+                            title=row['菜名'],
+                            text=column_text[:120]  # LINE CarouselColumn text 最多 120 字元
+                        )
+                )
+         return TemplateSendMessage(
+                alt_text="建議食譜",
+                template=CarouselTemplate(columns=columns)
+        )
+
 
     else:
         return "請輸入以下指令：\n1️⃣ 明日菜價\n2️⃣ 建議食譜"
