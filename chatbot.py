@@ -123,8 +123,12 @@ def handle_user_message(user_input):
             else:
                 result += f"\n🟦 {veg_display} 可料理：\n"
                 for _, row in recipes.iterrows():
-                    result += f"- {row['菜名']}（主食材：{row['主要食材']}）\n"
-
+                    result += (
+                        f"- {row['菜名']}（主食材：{row['主要食材']}）\n"
+                        f"  熱量：{row['熱量 kcal']} kcal | "
+                        f"蛋白質：{row['蛋白質 g']} g | "
+                        f"碳水：{row['碳水 g']} g\n"
+                    )
         return result
 
     else:
