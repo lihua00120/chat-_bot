@@ -7,7 +7,7 @@ import os
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, CarouselTemplate, CarouselColumn
 
 
 # ============================
@@ -109,6 +109,7 @@ def handle_user_message(user_input):
     elif user_input == "建議食譜":
         result = " 依據便宜蔬菜推薦食譜：\n"
         selected = get_top5_cheapest()
+        columns = []
         # 從便宜菜中挑前幾名
 
         for veg, avg, pred, diff in selected:
@@ -119,8 +120,14 @@ def handle_user_message(user_input):
             ]
 
             if recipes.empty:
-                result += f"❌ {veg_display} 找不到食譜\n"
+                columns.append(
+                    CarouselColumn(
+                        title=f"{veg_display} 找不到食譜",
+                        text="暫無建議菜單"
+                    )
+            )
             else:
+                
                 result += f"\n🟦 {veg_display} 可料理：\n"
                 for _, row in recipes.iterrows():
                     result += (
