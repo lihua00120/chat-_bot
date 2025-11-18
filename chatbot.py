@@ -101,12 +101,8 @@ def handle_user_message(user_input):
         result = " 前五名便宜蔬菜及明日預測價格：\n"
         for veg, avg, price, diff in selected:
             veg_display = name_map.get(veg, veg)
-            result += (
-                    f"- {row['菜名']}（主食材：{row['主要食材']}）\n"
-                    f"  熱量：{row['熱量 kcal']} kcal | "
-                    f"蛋白質：{row['蛋白質 g']} g | "
-                    f"碳水：{row['碳水 g']} g\n"
-                )
+            result += f"{veg_display} → {price:.2f} 元/公斤（比月均低 {diff:.1f}）\n"
+
         return result
 
 
