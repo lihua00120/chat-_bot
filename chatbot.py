@@ -159,12 +159,19 @@ def handle_user_message(user_input):
         vegs = [v.strip() for v in user_input.split("[,、 ]+", user_input)]
         columns = find_recipes(vegs)
         if not columns:
-            return f"❌ 找不到包含 {user_input} 的食譜"
-        return TemplateSendMessage(
-            alt_text=f"{user_input} 食譜",
-            template=CarouselTemplate(columns=columns)
+            line_bot_api.reply_message(
+                event.reply_token,
+                TextSendMessage(f"❌ 找不到包含 {user_input} 的食譜")
+            )
+            return
+        line_bot_api.reply_message(
+            event.reply_token,
+            TemplateSendMessage(
+                alt_text=f"{user_input} 食譜",
+                template=CarouselTemplate(columns=columns)
+            )
         )
-
+        return
 
 
 # ============================
