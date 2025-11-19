@@ -152,7 +152,7 @@ def handle_user_message(user_input):
                 template=CarouselTemplate(columns=columns)
             )
         )
-    return
+        return
 
     else:
         # 可以支援多個菜名，用逗號或空格分隔
