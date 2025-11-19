@@ -183,7 +183,7 @@ def callback():
 @handler.add(MessageEvent, message=TextMessage)
 def message_event(event):
     user_text = event.message.text
-    reply_text = handle_user_message(user_text)
+    reply_obj = handle_user_message(user_text)
 
     if isinstance(reply_obj, TemplateSendMessage):
         line_bot_api.reply_message(
