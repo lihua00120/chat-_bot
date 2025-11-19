@@ -185,10 +185,17 @@ def message_event(event):
     user_text = event.message.text
     reply_text = handle_user_message(user_text)
 
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=reply_text)
-    )
+    if isinstance(reply_obj, TemplateSendMessage):
+        line_bot_api.reply_message(
+            event.reply_token,
+            reply_obj
+        )
+    else:
+        # 一般文字
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=reply_obj)
+        )
 
 
 
