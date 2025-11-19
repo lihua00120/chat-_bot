@@ -104,7 +104,7 @@ def handle_user_message(user_input):
                 columns.append(
                     CarouselColumn(
                         title=f"{veg_display} 找不到食譜",
-                        text="暫無建議菜單"
+                        text="暫無建議菜單",
                         actions=[MessageAction(label="返回", text="明日菜價")]
                     )
                 )
@@ -120,7 +120,7 @@ def handle_user_message(user_input):
                     columns.append(
                         CarouselColumn(
                             title=row['菜名'],
-                            text=column_text[:500]  # LINE CarouselColumn text 最多 120 字元
+                            text=column_text[:500] , # LINE CarouselColumn text 最多 120 字元
                             actions=[MessageAction(label="返回", text="明日菜價")]
                         )
                     )
