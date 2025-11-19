@@ -129,24 +129,30 @@ def handle_user_message(user_input):
         selected = get_top5_cheapest()
 
         if not selected:
-            return "⚠️ 明日沒有任何蔬菜低於月平均價！"
+                line_bot_api.reply_message(event.reply_token, TextSendMessage("⚠️ 明日沒有任何蔬菜低於月平均價！"))
+                return
 
         result = " 前五名便宜蔬菜及明日預測價格：\n"
         for veg, avg, price, diff in selected:
             veg_display = name_map.get(veg, veg)
             result += f"{veg_display} → {price:.2f} 元/公斤（比月均低 {diff:.1f}）\n"
 
-        return result
+        line_bot_api.reply_message(event.reply_token, TextSendMessage(result))
+        return
 
 
     elif user_input == "建議食譜":
         selected = get_top5_cheapest()
         vegs = [veg for veg, avg, pred, diff in selected]
         columns = find_recipes(vegs)
-        return TemplateSendMessage(
-            alt_text="建議食譜",
-            template=CarouselTemplate(columns=columns)
+        line_bot_api.reply_message(
+            event.reply_token,
+            TemplateSendMessage(
+                alt_text="建議食譜",
+                template=CarouselTemplate(columns=columns)
+            )
         )
+    return
 
     else:
         # 可以支援多個菜名，用逗號或空格分隔
