@@ -7,7 +7,7 @@ import os
 
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage, CarouselTemplate, CarouselColumn
+from linebot.models import MessageEvent, TextMessage, TextSendMessage, CarouselTemplate, CarouselColumn, TemplateSendMessage
 
 
 # ============================
@@ -150,7 +150,7 @@ def handle_user_message(user_input):
 
     else:
         # 可以支援多個菜名，用逗號或空格分隔
-        vegs = [v.strip() for v in user_input.split(" 、")]
+        vegs = [v.strip() for v in user_input.split("[,、 ]+", user_input)]
         columns = find_recipes(vegs)
         if not columns:
             return f"❌ 找不到包含 {user_input} 的食譜"
