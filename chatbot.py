@@ -120,7 +120,7 @@ def handle_user_message(user_input):
                     columns.append(
                         CarouselColumn(
                             title=row['菜名'],
-                            text=column_text[:500] , # LINE CarouselColumn text 最多 120 字元
+                            text=column_text[:60] , # LINE CarouselColumn text 最多 120 字元
                             actions=[MessageAction(label="返回", text="明日菜價")]
                         )
                     )
@@ -147,7 +147,7 @@ def handle_user_message(user_input):
         columns = find_recipes(vegs)
         return TemplateSendMessage(
             alt_text="建議食譜",
-            template=CarouselTemplate(columns=columns[:25])  # LINE 最多 10 個
+            template=CarouselTemplate(columns=columns[:10])  # LINE 最多 10 個
         )
 
     else:
@@ -158,7 +158,7 @@ def handle_user_message(user_input):
              return TextSendMessage(f"❌ 找不到包含 {user_input} 的食譜")
         return TemplateSendMessage(
              alt_text=f"{user_input} 食譜",
-             template=CarouselTemplate(columns=columns[:25])
+             template=CarouselTemplate(columns=columns[:10])
     
         )
 
