@@ -105,6 +105,7 @@ def handle_user_message(user_input):
                     CarouselColumn(
                         title=f"{veg_display} 找不到食譜",
                         text="暫無建議菜單"
+                        actions=[MessageAction(label="返回", text="明日菜價")]
                     )
                 )
             else:
@@ -119,7 +120,8 @@ def handle_user_message(user_input):
                     columns.append(
                         CarouselColumn(
                             title=row['菜名'],
-                            text=column_text[:120]  # LINE CarouselColumn text 最多 120 字元
+                            text=column_text[:500]  # LINE CarouselColumn text 最多 120 字元
+                            actions=[MessageAction(label="返回", text="明日菜價")]
                         )
                     )
         return columns
@@ -129,49 +131,37 @@ def handle_user_message(user_input):
         selected = get_top5_cheapest()
 
         if not selected:
-                line_bot_api.reply_message(event.reply_token, TextSendMessage("⚠️ 明日沒有任何蔬菜低於月平均價！"))
-                return
+                return TextSendMessage("⚠️ 明日沒有任何蔬菜低於月平均價！")
 
         result = " 前五名便宜蔬菜及明日預測價格：\n"
         for veg, avg, price, diff in selected:
             veg_display = name_map.get(veg, veg)
             result += f"{veg_display} → {price:.2f} 元/公斤（比月均低 {diff:.1f}）\n"
 
-        line_bot_api.reply_message(event.reply_token, TextSendMessage(result))
-        return
+        return TextSendMessage(result)
 
 
     elif user_input == "建議食譜":
         selected = get_top5_cheapest()
         vegs = [veg for veg, avg, pred, diff in selected]
         columns = find_recipes(vegs)
-        line_bot_api.reply_message(
-            event.reply_token,
-            TemplateSendMessage(
-                alt_text="建議食譜",
-                template=CarouselTemplate(columns=columns)
-            )
+        return TemplateSendMessage(
+            alt_text="建議食譜",
+            template=CarouselTemplate(columns=columns[:25])  # LINE 最多 10 個
         )
-        return
 
     else:
         # 可以支援多個菜名，用逗號或空格分隔
-        vegs = [v.strip() for v in user_input.split("[,、 ]+", user_input)]
+        vegs = re.split(r"[,、 ]+", user_input)
         columns = find_recipes(vegs)
         if not columns:
-            line_bot_api.reply_message(
-                event.reply_token,
-                TextSendMessage(f"❌ 找不到包含 {user_input} 的食譜")
-            )
-            return
-        line_bot_api.reply_message(
-            event.reply_token,
-            TemplateSendMessage(
-                alt_text=f"{user_input} 食譜",
-                template=CarouselTemplate(columns=columns)
-            )
+             return TextSendMessage(f"❌ 找不到包含 {user_input} 的食譜")
+        return TemplateSendMessage(
+             alt_text=f"{user_input} 食譜",
+             template=CarouselTemplate(columns=columns[:25])
+    
         )
-        return
+
 
 
 # ============================
@@ -195,20 +185,8 @@ def callback():
 # ============================
 @handler.add(MessageEvent, message=TextMessage)
 def message_event(event):
-    user_text = event.message.text
-    reply_obj = handle_user_message(user_text)
-
-    if isinstance(reply_obj, TemplateSendMessage):
-        line_bot_api.reply_message(
-            event.reply_token,
-            reply_obj
-        )
-    else:
-        # 一般文字
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text=reply_obj)
-        )
+    reply_obj = handle_user_message(event.message.text)
+    line_bot_api.reply_message(event.reply_token, reply_obj)
 
 
 
