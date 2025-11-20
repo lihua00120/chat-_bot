@@ -120,7 +120,7 @@ def handle_user_message(user_input):
                     columns.append(
                         CarouselColumn(
                             title=row['菜名'],
-                            text=column_text[:60] , # LINE CarouselColumn text 最多 120 字元
+                            text=column_text[:120] , # LINE CarouselColumn text 最多 120 字元
                             actions=[MessageAction(label="返回", text="明日菜價")]
                         )
                     )
