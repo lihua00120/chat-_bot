@@ -200,7 +200,7 @@ def handle_user_message(user_input):
 
         return sorted(diffs, key=lambda x: abs(x[3]))[:5]
 
-    def find_recipes(vegs):
+    def find_recipes(vegs, show_all=False):
         bubbles = []
         default_img = "https://raw.githubusercontent.com/lihua00120/chat-_bot/refs/heads/main/images/%E4%B8%89%E6%9D%AF%E8%A0%94%E8%8F%87.jpg"
         
