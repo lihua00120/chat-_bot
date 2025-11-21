@@ -244,7 +244,7 @@ def handle_user_message(user_input):
             else:
                 to_show = recipes if show_all else recipes.head(2)
                 for _, row in to_show.iterrows():
-                    bubble = make_recipe_bubble(row, default_img,veg_display=veg_display, show_more=not show_all)
+                    bubble = make_recipe_bubble(row, default_img,veg_display=veg_display)
                     bubbles.append(bubble)
 
         return bubbles
