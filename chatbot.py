@@ -246,6 +246,7 @@ def handle_user_message(user_input):
         bubbles = find_recipes(vegs)
         if not bubbles:
              return TextSendMessage(f"❌ 找不到包含 {user_input} 的食譜")
+        alt_text = f"{user_input} 食譜" if user_input.strip() else "建議食譜"
         return FlexSendMessage(
              alt_text=f"{user_input} 食譜",
              contents={
