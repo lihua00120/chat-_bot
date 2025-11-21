@@ -7,7 +7,7 @@ import os
 import re
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import FlexSendMessage,MessageEvent,MessageAction, TextMessage, TextSendMessage, CarouselTemplate, CarouselColumn, TemplateSendMessage
+from linebot.models import FlexSendMessage,MessageEvent,MessageAction, TextMessage, TextSendMessage
 
 
 # ============================
