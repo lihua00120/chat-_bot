@@ -112,6 +112,7 @@ def handle_user_message(user_input):
             if recipes.empty:
                 columns.append(
                     CarouselColumn(
+                        thumbnail_image_url="https://i.imgur.com/xxxxxxx.png",  # 可放預設圖
                         title=f"{veg_display} 找不到食譜",
                         text="暫無建議菜單",
                         actions=[MessageAction(label="返回", text="明日菜價")]
@@ -128,6 +129,7 @@ def handle_user_message(user_input):
                     )
                     columns.append(
                         CarouselColumn(
+                            thumbnail_image_url=row["圖片網址"],
                             title=row['菜名'],
                             text=column_text[:60] , # LINE CarouselColumn text 最多 120 字元
                             actions=[MessageAction(label="返回", text="明日菜價")]
