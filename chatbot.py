@@ -155,7 +155,7 @@ def handle_user_message(user_input):
 
     def find_recipes(vegs):
         bubbles = []
-        default_img = "https://raw.githubusercontent.com/lihua00120/chat-_bot/refs/heads/main/images/三杯雞.jpg"
+        default_img = "https://raw.githubusercontent.com/lihua00120/chat-_bot/refs/heads/main/images/%E4%B8%89%E6%9D%AF%E8%A0%94%E8%8F%87.jpg"
         
         for veg in vegs:
             veg_display = name_map.get(veg, veg)
