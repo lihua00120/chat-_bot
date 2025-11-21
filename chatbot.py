@@ -41,6 +41,53 @@ avg_price_dict = df_recent.groupby('產品名稱')['加權平均價(元/公斤)'
 #================
 #換名字
 name_map = {
+    "青花菜": "青花苔",
+    "青花苔": "青花苔",
+    "青江白菜": "青江白菜",
+    "小白菜": "青江白菜",
+    "隼人瓜": "隼人瓜",
+    "佛手瓜": "隼人瓜",
+    "薯蕷": "薯蕷",
+    "山藥": "薯蕷",
+    "蕹菜": "蕹菜",
+    "空心菜": "蕹菜",
+    "萊豆": "萊豆",
+    "蠶豆": "萊豆",
+    "花椰菜": "花椰菜",
+    "白花椰": "花椰菜",
+    "胡瓜": "胡瓜",
+    "小黃瓜": "胡瓜",
+    "甘藷": "甘藷",
+    "地瓜": "甘藷",
+    "甘藍": "甘藍",
+    "高麗菜": "甘藍", 
+    "球莖甘藍": "球莖甘藍",  # 如果 CSV 裡叫球莖甘藍就保留
+    "敏豆": "敏豆",
+    "四季豆": "敏豆",
+    "扁蒲": "扁蒲",
+    "蒲瓜": "扁蒲",
+    "芋": "芋",
+    "芋頭": "芋",
+    "濕香菇": "濕香菇",
+    "香菇": "濕香菇",
+    "濕木耳": "濕木耳",
+    "木耳": "濕木耳",
+    "落花生": "落花生",
+    "花生": "落花生",
+    "黃秋葵": "黃秋葵",
+    "秋葵": "黃秋葵",
+    "青蔥": "青蔥",
+    "蔥": "青蔥",
+    "萵苣菜": "萵苣菜",
+    "A菜": "萵苣菜",
+    "芫荽": "芫荽",
+    "香菜": "芫荽",
+    "甘藷葉": "甘藷葉",
+    "地瓜葉": "甘藷葉"
+}
+
+
+display_map = {
     "青花苔": "青花菜",
     "青江白菜": "小白菜",
     "隼人瓜": "佛手瓜",
@@ -158,8 +205,9 @@ def handle_user_message(user_input):
         default_img = "https://raw.githubusercontent.com/lihua00120/chat-_bot/refs/heads/main/images/%E4%B8%89%E6%9D%AF%E8%A0%94%E8%8F%87.jpg"
         
         for veg in vegs:
-            veg_display = name_map.get(veg, veg)
-            veg_search = name_map.get(veg, veg)
+            veg_search = name_map.get(veg, veg)          # 查食譜用
+            veg_display = display_map.get(veg_search, veg_search)  # 顯示用
+            
             recipes = df_recipe[
                 df_recipe["主要食材"].str.contains(veg_search, na=False)|
                 df_recipe["輔助食材"].str.contains(veg_search, na=False)
