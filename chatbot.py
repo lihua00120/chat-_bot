@@ -167,8 +167,8 @@ def make_recipe_bubble(row, default_img, veg_display=None):
                     "type": "button",
                     "action": {
                         "type": "message",
-                        "label": "返回",
-                        "text": "明日菜價"
+                        "label":  "查看更多",
+                        "text": f"查看更多 {veg_display} 食譜"
                     },
                     "style": "primary",
                     "height": "sm"
@@ -238,28 +238,13 @@ def handle_user_message(user_input):
                                 "wrap": True
                             }
                         ]
-                    },
-                    "footer": {  # 🌟 加上返回按鈕
-                        "type": "box",
-                        "layout": "horizontal",
-                        "contents": [
-                            {
-                                "type": "button",
-                                "action": {
-                                       "type": "message",
-                                        "label": "返回",
-                                        "text": "明日菜價"
-                                },
-                                "style": "primary",
-                                "height": "sm"
-                            }
-                        ]
                     }
                 }
                 bubbles.append(bubble)
             else:
-                for _, row in recipes.iterrows():
-                    bubble = make_recipe_bubble(row, default_img)
+                to_show = recipes if show_all else recipes.head(2)
+                for _, row in to_show.iterrows():
+                    bubble = make_recipe_bubble(row, default_img,veg_display=veg_display, show_more=not show_all)
                     bubbles.append(bubble)
 
         return bubbles
@@ -273,7 +258,7 @@ def handle_user_message(user_input):
 
         result = " 前五名便宜蔬菜及明日預測價格：\n"
         for veg, avg, price, diff in selected:
-            veg_display = name_map.get(veg, veg)
+            veg_display = display_map.get(veg, veg) 
             result += f"{veg_display} → {price:.2f} 元/公斤（比月均低 {diff:.1f}）\n"
 
         return TextSendMessage(result)
@@ -285,6 +270,17 @@ def handle_user_message(user_input):
         bubbles = find_recipes(vegs)
         return FlexSendMessage(
             alt_text="今日便宜蔬菜建議食譜",
+            contents={
+                "type": "carousel",
+                "contents": bubbles[:10]
+            }
+        )
+    elif user_input.startswith("查看更多 "):
+        # 從訊息抓出蔬菜名稱
+        veg_name = user_input.replace("查看更多 ", "").replace(" 食譜", "")
+        bubbles = find_recipes([veg_name], show_all=True)  # 顯示全部食譜
+        return FlexSendMessage(
+            alt_text=f"{veg_name} 完整食譜",
             contents={
                 "type": "carousel",
                 "contents": bubbles[:10]
