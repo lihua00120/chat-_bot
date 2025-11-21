@@ -7,7 +7,7 @@ import os
 import re
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent,MessageAction, TextMessage, TextSendMessage, CarouselTemplate, CarouselColumn, TemplateSendMessage
+from linebot.models import FlexSendMessage,MessageEvent,MessageAction, TextMessage, TextSendMessage, CarouselTemplate, CarouselColumn, TemplateSendMessage
 
 
 # ============================
@@ -76,6 +76,59 @@ LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET")
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
+#Flex Recipe Bubble 模板
+def make_recipe_bubble(row, default_img, veg_display=None):
+    return {
+        "type": "bubble",
+        "hero": {
+            "type": "image",
+            "url": row.get("圖片網址", default_img),
+            "size": "full",
+            "aspectRatio": "20:13",
+            "aspectMode": "cover"
+        },
+        "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+                {
+                    "type": "text",
+                    "text": row.get("菜名", f"{veg_display} 找不到食譜"),
+                    "weight": "bold",
+                    "size": "lg"
+                },
+                {
+                    "type": "text",
+                    "text": (
+                        f"主食材：{row.get('主要食材','')}\n"
+                        f"輔助食材：{row.get('輔助食材','')}\n"
+                        f"熱量：{row.get('熱量 kcal','')} kcal\n"
+                        f"蛋白質：{row.get('蛋白質 g','')} g\n"
+                        f"碳水：{row.get('碳水 g','')} g"
+                    )[:120],
+                    "wrap": True,
+                    "size": "sm",
+                    "color": "#555555"
+                }
+            ]
+        },
+        "footer": {
+            "type": "box",
+            "layout": "horizontal",
+            "contents": [
+                {
+                    "type": "button",
+                    "action": {
+                        "type": "message",
+                        "label": "返回",
+                        "text": "明日菜價"
+                    },
+                    "style": "primary",
+                    "height": "sm"
+                }
+            ]
+        }
+    }
 
 
 # ============================
@@ -101,7 +154,9 @@ def handle_user_message(user_input):
         return sorted(diffs, key=lambda x: abs(x[3]))[:5]
 
     def find_recipes(vegs):
-        columns = []
+        bubbles = []
+        default_img = "https://github.com/lihua00120/chat-_bot/blob/main/images/九層塔烘蛋.jpg"
+        
         for veg in vegs:
             veg_display = name_map.get(veg, veg)
             veg_search = name_map.get(veg, veg)
@@ -110,32 +165,54 @@ def handle_user_message(user_input):
                 df_recipe["輔助食材"].str.contains(veg_search, na=False)
             ]
             if recipes.empty:
-                columns.append(
-                    CarouselColumn(
-                        thumbnail_image_url="https://github.com/lihua00120/chat-_bot/blob/main/images/九層塔烘蛋.jpg",  # 可放預設圖
-                        title=f"{veg_display} 找不到食譜",
-                        text="暫無建議菜單",
-                        actions=[MessageAction(label="返回", text="明日菜價")]
-                    )
-                )
+                bubble = {
+                    "type": "bubble",
+                    "hero": {
+                        "type": "image",
+                        "url": default_img,
+                        "size": "full",
+                        "aspectMode": "cover"
+                    },
+                    "body": {
+                        "type": "box",
+                        "layout": "vertical",
+                        "contents": [
+                            {
+                                "type": "text",
+                                "text": f"{veg_display} 找不到食譜",
+                                "weight": "bold",
+                                "size": "lg"
+                            },
+                            {
+                                "type": "text",
+                                "text": "暫無建議菜單",
+                                "size": "sm",
+                                "wrap": True
+                            }
+                        ]
+                    },
+                    "footer": {
+                        "type": "box",
+                        "layout": "horizontal",
+                        "contents": [
+                            {
+                                "type": "button",
+                                "action": {
+                                    "type": "message",
+                                    "label": "返回",
+                                    "text": "明日菜價"
+                                }
+                            }
+                        ]
+                    }
+                }
+                bubbles.append(bubble)
             else:
                 for _, row in recipes.iterrows():
-                    column_text = (
-                        f"主食材：{row['主要食材']}\n"
-                        f"輔助食材：{row['輔助食材']}\n"
-                        f"熱量：{row['熱量 kcal']} kcal\n"
-                        f"蛋白質：{row['蛋白質 g']} g\n"
-                        f"碳水：{row['碳水 g']} g"
-                    )
-                    columns.append(
-                        CarouselColumn(
-                            thumbnail_image_url=row["圖片網址"],
-                            title=row['菜名'],
-                            text=column_text[:60] , # LINE CarouselColumn text 最多 120 字元
-                            actions=[MessageAction(label="返回", text="明日菜價")]
-                        )
-                    )
-        return columns
+                    bubble = make_recipe_bubble(row, default_img)
+                    bubbles.append(bubble)
+
+        return bubbles
         
     if user_input == "明日菜價":
         
@@ -155,22 +232,26 @@ def handle_user_message(user_input):
     elif user_input == "建議食譜":
         selected = get_top5_cheapest()
         vegs = [veg for veg, avg, pred, diff in selected]
-        columns = find_recipes(vegs)
-        return TemplateSendMessage(
-            alt_text="建議食譜",
-            template=CarouselTemplate(columns=columns[:10])  # LINE 最多 10 個
+        bubbles = find_recipes(vegs)
+        return FlexSendMessage(
+           contents={
+                "type": "carousel",
+                "contents": bubbles[:10]
+            }
         )
 
     else:
         # 可以支援多個菜名，用逗號或空格分隔
         vegs = re.split(r"[,、 ]+", user_input)
-        columns = find_recipes(vegs)
-        if not columns:
+        bubbles = find_recipes(vegs)
+        if not bubbles:
              return TextSendMessage(f"❌ 找不到包含 {user_input} 的食譜")
-        return TemplateSendMessage(
+        return FlexSendMessage(
              alt_text=f"{user_input} 食譜",
-             template=CarouselTemplate(columns=columns[:10])
-    
+             contents={
+                "type": "carousel",
+                "contents": bubbles[:10]
+            }
         )
 
 
