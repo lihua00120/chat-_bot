@@ -234,7 +234,8 @@ def handle_user_message(user_input):
         vegs = [veg for veg, avg, pred, diff in selected]
         bubbles = find_recipes(vegs)
         return FlexSendMessage(
-           contents={
+            alt_text="今日便宜蔬菜建議食譜",
+            contents={
                 "type": "carousel",
                 "contents": bubbles[:10]
             }
