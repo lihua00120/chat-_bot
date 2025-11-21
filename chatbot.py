@@ -158,22 +158,6 @@ def make_recipe_bubble(row, default_img, veg_display=None):
                     "color": "#555555"
                 }
             ]
-        },
-        "footer": {
-            "type": "box",
-            "layout": "horizontal",
-            "contents": [
-                {
-                    "type": "button",
-                    "action": {
-                        "type": "message",
-                        "label": "返回",
-                        "text": "明日菜價"
-                    },
-                    "style": "primary",
-                    "height": "sm"
-                }
-            ]
         }
     }
 
@@ -236,20 +220,6 @@ def handle_user_message(user_input):
                                 "text": "暫無建議菜單",
                                 "size": "sm",
                                 "wrap": True
-                            }
-                        ]
-                    },
-                    "footer": {
-                        "type": "box",
-                        "layout": "horizontal",
-                        "contents": [
-                            {
-                                "type": "button",
-                                "action": {
-                                    "type": "message",
-                                    "label": "返回",
-                                    "text": "明日菜價"
-                                }
                             }
                         ]
                     }
