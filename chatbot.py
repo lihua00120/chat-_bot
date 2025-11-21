@@ -112,7 +112,7 @@ def handle_user_message(user_input):
             if recipes.empty:
                 columns.append(
                     CarouselColumn(
-                        thumbnail_image_url="https://i.imgur.com/xxxxxxx.png",  # 可放預設圖
+                        thumbnail_image_url="https://github.com/lihua00120/chat-_bot/blob/main/images/九層塔烘蛋.jpg",  # 可放預設圖
                         title=f"{veg_display} 找不到食譜",
                         text="暫無建議菜單",
                         actions=[MessageAction(label="返回", text="明日菜價")]
