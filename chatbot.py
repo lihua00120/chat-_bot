@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 import os
 import re
+import openai
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import FlexSendMessage,MessageEvent,MessageAction, TextMessage, TextSendMessage
@@ -120,8 +121,25 @@ app = Flask(__name__)
 
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv("LINE_CHANNEL_ACCESS_TOKEN")
 LINE_CHANNEL_SECRET = os.getenv("LINE_CHANNEL_SECRET")
+OpenAI_API_key=os.getenv("OpenAI_API_key")
+
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
+OPENAI_API_KEY=OpenAI_API_key
+
+def chatgpt_reply(prompt):
+    try:
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",  # 或 "gpt-4"
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=500
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"ChatGPT 發生錯誤: {e}"
+
+
 
 #Flex Recipe Bubble 模板
 def make_recipe_bubble(row, default_img, veg_display=None):
@@ -291,16 +309,15 @@ def handle_user_message(user_input):
         # 可以支援多個菜名，用逗號或空格分隔
         vegs = re.split(r"[,、 ]+", user_input)
         bubbles = find_recipes(vegs)
-        if not bubbles:
-             return TextSendMessage(f"❌ 找不到包含 {user_input} 的食譜")
-        alt_text = f"{user_input} 食譜" if user_input.strip() else "建議食譜"
-        return FlexSendMessage(
-             alt_text=f"{user_input} 食譜",
-             contents={
-                "type": "carousel",
-                "contents": bubbles[:10]
-            }
-        )
+        if bubbles:
+             return FlexSendMessage(
+                alt_text=f"{user_input} 食譜",
+                contents={"type": "carousel", "contents": bubbles[:10]}
+              )
+        else:
+            # 如果找不到食譜，就交給 ChatGPT 回答
+            answer = chatgpt_reply(user_input)
+            return TextSendMessage(answer)
 
 
 
