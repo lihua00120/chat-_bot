@@ -309,7 +309,7 @@ def handle_user_message(user_input):
         # 可以支援多個菜名，用逗號或空格分隔
         vegs = re.split(r"[,、 ]+", user_input)
         bubbles, found_any_recipe = find_recipes(vegs)
-        if not found:
+        if not found_any_recipe:
             answer = chatgpt_reply(user_input)
             return TextSendMessage(answer)
             
