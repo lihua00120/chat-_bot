@@ -218,6 +218,7 @@ def handle_user_message(user_input):
 
     def find_recipes(vegs, show_all=False):
         bubbles = []
+        found_any_recipe = False 
         default_img = "https://raw.githubusercontent.com/lihua00120/chat-_bot/refs/heads/main/images/%E4%B8%89%E6%9D%AF%E8%A0%94%E8%8F%87.jpg"
         
         for veg in vegs:
@@ -258,12 +259,13 @@ def handle_user_message(user_input):
                 }
                 bubbles.append(bubble)
             else:
+                found_any_recipe = True 
                 to_show = recipes if show_all else recipes.head(2)
                 for _, row in to_show.iterrows():
                     bubble = make_recipe_bubble(row, default_img,veg_display=veg_display)
                     bubbles.append(bubble)
 
-        return bubbles
+        return bubbles, found_any_recipe
         
     if user_input == "明日菜價":
         
@@ -307,16 +309,14 @@ def handle_user_message(user_input):
         # 可以支援多個菜名，用逗號或空格分隔
         vegs = re.split(r"[,、 ]+", user_input)
         bubbles = find_recipes(vegs)
-        if bubbles:
-             return FlexSendMessage(
-                alt_text=f"{user_input} 食譜",
-                contents={"type": "carousel", "contents": bubbles[:10]}
-              )
-        else:
-            # 如果找不到食譜，就交給 ChatGPT 回答
+        if not found:
             answer = chatgpt_reply(user_input)
             return TextSendMessage(answer)
-
+              )
+        return FlexSendMessage(
+            alt_text=f"{user_input} 食譜",
+            contents={"type": "carousel", "contents": bubbles[:10]}
+        )
 
 
 # ============================
