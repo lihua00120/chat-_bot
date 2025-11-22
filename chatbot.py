@@ -311,13 +311,16 @@ def handle_user_message(user_input):
         bubbles, found_any_recipe = find_recipes(vegs)
         if not found_any_recipe:
             answer = chatgpt_reply(user_input)
-            return TextSendMessage(answer)
+            reply_obj = TextSendMessage(answer)
             
-        return FlexSendMessage(
-            alt_text=f"{user_input} 食譜",
-            contents={"type": "carousel", "contents": bubbles[:10]}
-        )
-
+        else:
+            # 找到食譜，使用 Flex Message
+            reply_obj = FlexSendMessage(
+                alt_text=f"{user_input} 食譜",
+                contents={"type": "carousel", "contents": bubbles[:10]}
+            )
+            
+        return reply_obj # <--- 統一在結尾返回
 
 # ============================
 # Webhook 入口
