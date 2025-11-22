@@ -125,11 +125,11 @@ OpenAI_API_key=os.getenv("OpenAI_API_key")
 
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
-OPENAI_API_KEY=OpenAI_API_key
+client = OpenAI(api_key=OpenAI_API_key)
 
 def chatgpt_reply(prompt):
     try:
-        response = openai.ChatCompletion.create(
+        response = client.chat.completions.create(
             model="gpt-3.5-turbo",  # 或 "gpt-4"
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
