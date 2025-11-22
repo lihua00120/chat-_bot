@@ -312,7 +312,7 @@ def handle_user_message(user_input):
         if not found:
             answer = chatgpt_reply(user_input)
             return TextSendMessage(answer)
-              )
+            
         return FlexSendMessage(
             alt_text=f"{user_input} 食譜",
             contents={"type": "carousel", "contents": bubbles[:10]}
