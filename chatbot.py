@@ -285,7 +285,7 @@ def handle_user_message(user_input):
     elif user_input == "建議食譜":
         selected = get_top5_cheapest()
         vegs = [veg for veg, avg, pred, diff in selected]
-        bubbles = find_recipes(vegs)
+        bubbles, found_any_recipe = find_recipes(vegs)
         return FlexSendMessage(
             alt_text="今日便宜蔬菜建議食譜",
             contents={
@@ -296,7 +296,7 @@ def handle_user_message(user_input):
     elif user_input.startswith("查看更多 "):
         # 從訊息抓出蔬菜名稱
         veg_name = user_input.replace("查看更多 ", "").replace(" 食譜", "")
-        bubbles = find_recipes([veg_name], show_all=True)  # 顯示全部食譜
+        bubbles, found_any_recipe = find_recipes([veg_name], show_all=True)
         return FlexSendMessage(
             alt_text=f"{veg_name} 完整食譜",
             contents={
@@ -308,7 +308,7 @@ def handle_user_message(user_input):
     else:
         # 可以支援多個菜名，用逗號或空格分隔
         vegs = re.split(r"[,、 ]+", user_input)
-        bubbles = find_recipes(vegs)
+        bubbles, found_any_recipe = find_recipes(vegs)
         if not found:
             answer = chatgpt_reply(user_input)
             return TextSendMessage(answer)
